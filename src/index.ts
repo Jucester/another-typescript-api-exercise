@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -8,6 +10,7 @@ require('./database/database');
 
 import indexRoutes from './routes/index.routes';
 import newsRoutes from './routes/news.routes';
+import authRoutes from './routes/auth.routes';
 
 class Server {
 
@@ -35,7 +38,8 @@ class Server {
 
     routes() {
         this.app.use(indexRoutes);
-        this.app.use("/news", newsRoutes);
+        this.app.use("/api/auth", authRoutes);
+        this.app.use("/api/news", newsRoutes);
     }
 
     start() {

@@ -1,10 +1,9 @@
 import mongoose from 'mongoose';
 
-const MONGO_URI = 'mongodb://localhost/api_tes';
-
-mongoose.connect(MONGO_URI || process.env.MONGODB_URL, {
+mongoose.connect(process.env.MONGODB_URL || 'mongotest', {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex: true
 }).then( () => {
     console.log('Database connected')
 }).catch( (err) => {
