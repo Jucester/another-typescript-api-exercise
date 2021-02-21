@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 
 class AuthController {
 
-    public async singUp (req: Request, res: Response) {
+    public async signUp (req: Request, res: Response) {
         // Receiving the data and saving a new user
         const { username, email, password } = req.body;
         const user : IUser = new User({
@@ -17,21 +17,52 @@ class AuthController {
         console.log(savedUser);
 
         // Asigning a token
-        const token : string = jwt.sign({ _id : savedUser._id }, process.env.TOKEN_SECRET_KEY || 'token_test');
+        const token : string = jwt.sign({ _id : savedUser._id }, process.env.TOKEN_SECRET_KEY || 'token_secret');
         
         res.status(200).header('auth-token', token).json({
             message: 'User registered',
             data: savedUser
         })
+    }
+
+    public async signIn (req: Request, res: Response) {
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email });
+        if(!user) {
+            return res.status(400).json({
+                message: 'Email or password incorrect'
+            });
+        }
+
+        const validated : boolean = await user.validatePassword(password)
+        if(!validated) {
+            return res.status(400).json({
+                message: 'Invalid password'
+            });
+        };
+
+        const token : string  = jwt.sign({ _id : user._id}, process.env.TOKEN_SECRET_KEY || 'token_secret', {
+            expiresIn: 60 * 60 * 24
+        });
+
+        res.status(200).header('auth-token', token).json({
+            message: 'User logged ',
+            data: user
+        })
 
     }
 
-    public singIn (req: Request, res: Response) {
-        res.send(`Api: /api/news`);
-    }
+    public async profile (req: Request, res: Response) {
+        const { userId } = req.body;
+        const user = await User.findById(userId)
 
-    public profile (req: Request, res: Response) {
-        res.send(`Api: /api/news`);
+        if(!user) return res.status(404).json('User not found');
+
+        res.status(200).json({
+            message: 'User found',
+            data: user
+        })
     }
 }
 

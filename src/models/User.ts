@@ -7,7 +7,7 @@ export interface IUser extends Document {
     email: string;
     password: string;
     //encryptPassword(password: string ): Promise<string>,
-    validatePassword(password: string): Promise<string>;
+    validatePassword(password: string): Promise<boolean>;
 }
 
 //Asignning "Schema<IUser>" solve the error with "this.password" not detected
